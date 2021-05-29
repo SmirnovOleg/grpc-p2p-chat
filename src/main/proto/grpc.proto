@@ -11,9 +11,11 @@ service Chat {
 message ChatMessageFromClient {
   string name = 1;
   string message = 2;
+  string time = 3;
 }
 
 message ChatMessageFromServer {
   string name = 1;
   string message = 2;
+  string time = 3;
 }

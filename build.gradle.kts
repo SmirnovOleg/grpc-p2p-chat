@@ -7,6 +7,7 @@ plugins {
     idea
     kotlin("jvm")
     id("com.google.protobuf")
+    id("org.openjfx.javafxplugin")
 }
 
 group = "org.example.chat"
@@ -21,15 +22,23 @@ val `protobuf-version`: String by project
 val `grpc-java`: String by project
 val `grpc-kotlin`: String by project
 val `grpc-annotations`: String by project
+val `tornadofx-version`: String by project
+val `javafx-version`: String by project
+
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$`kotlin-coroutines`")
 
     implementation("io.grpc:grpc-kotlin-stub:$`grpc-kotlin`")
     implementation("com.google.protobuf:protobuf-java-util:$`protobuf-version`")
     implementation("org.apache.tomcat:annotations-api:$`grpc-annotations`")
-    runtimeOnly("io.grpc:grpc-netty-shaded:$`grpc-java`")
+    implementation("io.grpc:grpc-netty-shaded:$`grpc-java`")
+
+    implementation("no.tornado:tornadofx:$`tornadofx-version`") {
+        exclude("org.jetbrains.kotlin")
+    }
 }
 
 protobuf {
@@ -52,6 +61,11 @@ protobuf {
             }
         }
     }
+}
+
+javafx {
+    version = `javafx-version`
+    modules("javafx.controls")
 }
 
 sourceSets {
