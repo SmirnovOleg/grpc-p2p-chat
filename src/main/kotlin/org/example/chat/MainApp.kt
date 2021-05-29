@@ -1,6 +1,9 @@
 package org.example.chat
 
 import javafx.beans.property.SimpleStringProperty
+import javafx.geometry.Insets
+import javafx.geometry.Pos
+import javafx.scene.control.ToggleGroup
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.example.chat.grpc.ChatClient
@@ -17,9 +20,10 @@ class InitView : View() {
     private val clientController: MyClientController by inject()
     private val serverController: MyServerController by inject()
 
-    var name = SimpleStringProperty("simp")
+    var name = SimpleStringProperty("gRPC lover")
     var host = SimpleStringProperty("localhost")
     var port = SimpleStringProperty("50051")
+    private val toggleGroup = ToggleGroup()
 
     override val root = form {
         fieldset("Initial chat settings") {
@@ -33,27 +37,40 @@ class InitView : View() {
                 textfield(port)
             }
         }
-
-        button("Start server") {
-            action {
-                serverController.serverName = name.value
-                GlobalScope.launch {
-                    val server = ChatServer(host.value, port.value.toInt())
-                    server.start()
-                    server.await()
-                }
-                replaceWith<MyServerView>()
+        hbox {
+            radiobutton("Server", toggleGroup).also {
+                it.isSelected = true
+            }
+            radiobutton("Client", toggleGroup).also {
+                it.hboxConstraints { marginLeft = 15.0 }
             }
         }
-        button("Start client") {
-            action {
-                clientController.clientName = name.value
-                GlobalScope.launch {
-                    ChatClient("${host.value}:${port.value}").use { client ->
-                        client.start()
+
+        hbox {
+            button("Start") {
+                action {
+                    if (toggleGroup.toggles[0].isSelected) {
+                        serverController.serverName = name.value
+                        GlobalScope.launch {
+                            val server = ChatServer(host.value, port.value.toInt())
+                            server.start()
+                            server.await()
+                        }
+                        replaceWith<MyServerView>()
+                    } else {
+                        clientController.clientName = name.value
+                        GlobalScope.launch {
+                            ChatClient("${host.value}:${port.value}").use { client ->
+                                client.start()
+                            }
+                        }
+                        replaceWith<MyClientView>()
                     }
                 }
-                replaceWith<MyClientView>()
+            }
+            alignment = Pos.CENTER_RIGHT
+            vboxConstraints {
+                margin = Insets(5.0)
             }
         }
     }
