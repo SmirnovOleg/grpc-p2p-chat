@@ -13,7 +13,7 @@ class MyController : Controller() {
     val receiveChannel = Channel<ChatMessage>()
     var userName = "noname"
 
-    suspend fun sendToServer(inputValue: String) {
+    suspend fun sendToClient(inputValue: String) {
         sendChannel.send(
             ChatMessage {
                 name = userName
