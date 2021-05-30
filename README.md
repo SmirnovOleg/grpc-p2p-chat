@@ -1,0 +1,39 @@
+# GRPC Chat
+
+### Description
+
+Implementation of a peer-to-peer chat with gRPC on Kotlin.
+User could act as a client or server. If the application runs as a server, the user must provide his own IP address and port.
+Otherwise, the IP and port of a host should be specified and server should be already running.
+If some error occurs (i.e. server IP is invalid), the application will show an alert and open an initialization window.
+
+Application uses MVC-like architecture -- but since there is no actual "data", there aren't any models. 
+Controller handles server/client instances creation, it also manages channels with received and sent messages. 
+Views provide with basic UI, and also are able to trigger actions in controller originating from pressed buttons, for example.
+
+Chat service has one bidirectional streaming RPC `chat` with both request and response stream of `ChatMessage` messages.
+Application uses Kotlin `Flow` objects to represent asynchronous streams.
+
+### Build & Run
+
+To generate java classes, services and client stubs:
+
+```
+gradle generateProto
+```
+
+To build whole project:
+
+```
+gradle build
+```
+
+To run:
+
+```
+gradle run
+```
+
+### Authors
+
+Oleg Smirnov, Alexey Shaposhnikov, Egor Gordienko
