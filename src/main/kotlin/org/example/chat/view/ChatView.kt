@@ -1,30 +1,24 @@
-package org.example.chat.ui
+package org.example.chat.view
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.Alert
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import org.example.chat.ExceptionEvent
-import org.example.chat.InitView
+import org.example.chat.controller.ChatController
+import org.example.chat.util.ExceptionEvent
 import tornadofx.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class MyView : View() {
-    private val controller: MyController by inject()
+class ChatView : View() {
+    private val controller: ChatController by inject()
     var chat = SimpleStringProperty("")
     var input = SimpleStringProperty("Type your message here")
-
-    override fun onDock() {
-        primaryStage.width = 500.0
-        primaryStage.height = 400.0
-    }
 
     init {
         subscribe<ExceptionEvent> {
@@ -32,6 +26,11 @@ class MyView : View() {
                 replaceWith<InitView>()
             }
         }
+    }
+
+    override fun onDock() {
+        primaryStage.width = 500.0
+        primaryStage.height = 400.0
     }
 
     override val root = vbox {

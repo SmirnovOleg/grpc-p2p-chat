@@ -1,16 +1,16 @@
-package org.example.chat.ui
+package org.example.chat.controller
 
 import kotlinx.coroutines.channels.Channel
 import org.example.chat.grpc.ChatClient
-import org.example.chat.grpc.ChatMessage
 import org.example.chat.grpc.ChatServer
+import org.example.chat.util.ChatMessage
 import org.example.grpc.gen.ChatMessage
 import tornadofx.Controller
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class MyController : Controller() {
+class ChatController : Controller() {
     val sendChannel = Channel<ChatMessage>()
     val receiveChannel = Channel<ChatMessage>()
     var userName = "noname"
