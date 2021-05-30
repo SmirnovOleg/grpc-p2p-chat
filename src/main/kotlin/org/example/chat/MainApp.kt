@@ -3,17 +3,33 @@ package org.example.chat
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.Alert
 import javafx.scene.control.ToggleGroup
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.example.chat.grpc.ChatClient
-import org.example.chat.grpc.ChatServer
 import org.example.chat.ui.MyController
 import org.example.chat.ui.MyView
 import tornadofx.*
 import java.net.InetAddress
 
-class MyApp : App(InitView::class)
+object ExceptionEvent : FXEvent(EventBus.RunOn.BackgroundThread)
+
+class MyApp : App(InitView::class) {
+    init {
+        DefaultErrorHandler.filter = {
+            it.consume()
+            runLater {
+                Alert(Alert.AlertType.ERROR).apply {
+                    title = "An error occured"
+                    isResizable = true
+                    contentText = it.error.message
+                    showAndWait()
+                }
+                fire(ExceptionEvent)
+            }
+        }
+    }
+}
 
 class InitView : View() {
     private val controller: MyController by inject()
@@ -22,6 +38,11 @@ class InitView : View() {
     var host = SimpleStringProperty(InetAddress.getLocalHost().hostAddress)
     var port = SimpleStringProperty("50051")
     private val toggleGroup = ToggleGroup()
+
+    override fun onDock() {
+        primaryStage.width = 250.0
+        primaryStage.height = 260.0
+    }
 
     override val root = form {
         fieldset("Initial chat settings") {
@@ -35,6 +56,7 @@ class InitView : View() {
                 textfield(port)
             }
         }
+
         hbox {
             radiobutton("Server", toggleGroup).also {
                 it.isSelected = true
@@ -47,23 +69,13 @@ class InitView : View() {
         hbox {
             button("Start") {
                 action {
-                    if (toggleGroup.toggles[0].isSelected) {
-                        controller.userName = name.value
-                        GlobalScope.launch {
-                            val server = ChatServer(host.value, port.value.toInt())
-                            server.start()
-                            server.await()
-                        }
-                        replaceWith<MyView>()
-                    } else {
-                        controller.userName = name.value
-                        GlobalScope.launch {
-                            ChatClient("${host.value}:${port.value}").use { client ->
-                                client.start()
-                            }
-                        }
-                        replaceWith<MyView>()
+                    GlobalScope.launch {
+                        if (toggleGroup.toggles[0].isSelected)
+                            controller.startServer(name.value, host.value, port.value.toInt())
+                        else
+                            controller.startClient(name.value, host.value, port.value)
                     }
+                    replaceWith<MyView>()
                 }
             }
             alignment = Pos.CENTER_RIGHT

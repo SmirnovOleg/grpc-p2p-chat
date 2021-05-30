@@ -5,9 +5,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
+    application
     kotlin("jvm")
     id("com.google.protobuf")
     id("org.openjfx.javafxplugin")
+}
+
+application {
+    mainClass.set("org.example.chat.MainAppKt")
 }
 
 group = "org.example.chat"

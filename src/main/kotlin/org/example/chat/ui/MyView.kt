@@ -3,11 +3,14 @@ package org.example.chat.ui
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.Alert
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import org.example.chat.ExceptionEvent
+import org.example.chat.InitView
 import tornadofx.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -21,6 +24,14 @@ class MyView : View() {
     override fun onDock() {
         primaryStage.width = 500.0
         primaryStage.height = 400.0
+    }
+
+    init {
+        subscribe<ExceptionEvent> {
+            runLater {
+                replaceWith<InitView>()
+            }
+        }
     }
 
     override val root = vbox {
