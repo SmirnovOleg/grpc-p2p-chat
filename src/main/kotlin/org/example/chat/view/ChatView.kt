@@ -58,7 +58,7 @@ class ChatView : View() {
                 action {
                     if (input.value != "") {
                         GlobalScope.launch {
-                            controller.sendToClient(input.value)
+                            controller.sendMessage(input.value)
                         }
                         val time = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM))
                         chat.value += "($time) [you]: ${input.value}\n"

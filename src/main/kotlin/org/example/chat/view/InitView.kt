@@ -52,7 +52,7 @@ class InitView : View() {
                         if (toggleGroup.toggles[0].isSelected)
                             controller.startServer(name.value, host.value, port.value.toInt())
                         else
-                            controller.startClient(name.value, host.value, port.value)
+                            controller.startClient(name.value, host.value, port.value.toInt())
                     }
                     replaceWith<ChatView>()
                 }

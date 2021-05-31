@@ -13,19 +13,19 @@ import java.time.format.FormatStyle
 class ChatController : Controller() {
     val sendChannel = Channel<ChatMessage>()
     val receiveChannel = Channel<ChatMessage>()
-    var userName = "noname"
+    private var userName = "noname"
 
-    suspend fun sendToClient(inputValue: String) {
+    suspend fun sendMessage(text: String) {
         sendChannel.send(
             ChatMessage {
                 name = userName
-                message = inputValue
+                message = text
                 time = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM))
             }
         )
     }
 
-    suspend fun startClient(clientName: String, host: String, port: String) {
+    suspend fun startClient(clientName: String, host: String, port: Int) {
         userName = clientName
         val chatClient = ChatClient("${host}:${port}")
         chatClient.use { client ->
