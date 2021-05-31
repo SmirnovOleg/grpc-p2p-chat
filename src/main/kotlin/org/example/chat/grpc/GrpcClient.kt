@@ -1,17 +1,16 @@
 package org.example.chat.grpc
 
 import io.grpc.ManagedChannelBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.example.chat.ui.MyClientController
-import org.example.chat.ui.MyServerController
+import kotlinx.coroutines.launch
+import org.example.chat.controller.ChatController
 import org.example.grpc.gen.ChatGrpcKt
 import tornadofx.find
 import java.io.Closeable
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ChatClient(address: String) : Closeable {
@@ -24,23 +23,17 @@ class ChatClient(address: String) : Closeable {
     private val stub = ChatGrpcKt.ChatCoroutineStub(channel)
 
     suspend fun start() {
-        val clientController = find(MyClientController::class)
+        val clientController = find(ChatController::class)
         val requests = clientController.sendChannel.receiveAsFlow()
         val responses = stub.chat(requests)
         GlobalScope.launch {
-            responses.collect { resp ->
-                clientController.receiveChannel.send(resp)
+            responses.collect { response ->
+                clientController.receiveChannel.send(response)
             }
         }.join()
     }
 
     override fun close() {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
-    }
-}
-
-fun main() = runBlocking {
-    ChatClient("localhost:50051").use { client ->
-        client.start()
     }
 }
