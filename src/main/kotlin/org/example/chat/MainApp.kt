@@ -8,7 +8,11 @@ import tornadofx.DefaultErrorHandler
 import tornadofx.launch
 import tornadofx.runLater
 
-
+/**
+ * A main Tornado app container.
+ *
+ * It hosts {%link org.example.chat.view.InitView} and sets up an error handler.
+ */
 class MyApp : App(InitView::class) {
     init {
         DefaultErrorHandler.filter = {

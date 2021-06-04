@@ -15,6 +15,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+/**
+ * The application window with chat. It is similar either for Server and Client.
+ */
 class ChatView : View() {
     private val controller: ChatController by inject()
     var chat = SimpleStringProperty("")

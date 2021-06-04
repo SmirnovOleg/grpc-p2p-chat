@@ -13,6 +13,16 @@ import tornadofx.find
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 
+/**
+ * The main client model.
+ *
+ * Implements chat messaging with the server. Gets client's messages from
+ * {%link org.example.chat.controller.ChatController#sendChannel} and sends it to the server using gRPC
+ * in server-stub call.
+ *
+ * Receives the messages from the server in the concurrent coroutine and sends them back to client's view:
+ * {%link org.example.chat.controller.ChatController#receiveChannel}.
+ */
 class ChatClient(address: String) : Closeable {
     private val channel = ManagedChannelBuilder
         .forTarget(address)

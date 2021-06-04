@@ -10,6 +10,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+/**
+ * A main controller class.
+ *
+ * Can launch server or client models. Receives messages from views using channels
+ * and sends them to the corresponding model (client or server).
+ */
 class ChatController : Controller() {
     val sendChannel = Channel<ChatMessage>()
     val receiveChannel = Channel<ChatMessage>()

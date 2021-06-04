@@ -21,19 +21,19 @@ Application uses Kotlin `Flow` objects to represent asynchronous streams.
 To generate java classes, services and client stubs:
 
 ```
-gradle generateProto
+./gradlew generateProto
 ```
 
 To build whole project:
 
 ```
-gradle build
+./gradlew build
 ```
 
 To run:
 
 ```
-gradle run
+./gradlew run
 ```
 
 ### Authors

@@ -10,6 +10,12 @@ import org.example.chat.controller.ChatController
 import tornadofx.*
 import java.net.InetAddress
 
+/**
+ * The initial application window (view) that the user sees.
+ *
+ * Contains `Host`, `Port, `Name` form fields. Also can notify the corresponding controllers to run the chat messaging
+ * and replace itself with another {%link org.example.chat.view.ChatView} afterwards.
+ */
 class InitView : View() {
     private val controller: ChatController by inject()
 
