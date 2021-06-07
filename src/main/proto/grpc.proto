@@ -5,15 +5,11 @@ package org.example.grpc.gen;
 option java_multiple_files = true;
 
 service Chat {
-  rpc chat (stream ChatMessageFromClient) returns (stream ChatMessageFromServer) {}
+  rpc chat (stream ChatMessage) returns (stream ChatMessage) {}
 }
 
-message ChatMessageFromClient {
+message ChatMessage {
   string name = 1;
   string message = 2;
-}
-
-message ChatMessageFromServer {
-  string name = 1;
-  string message = 2;
+  string time = 3;
 }

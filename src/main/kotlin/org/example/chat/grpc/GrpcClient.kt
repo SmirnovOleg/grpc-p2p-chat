@@ -1,14 +1,29 @@
 package org.example.chat.grpc
 
 import io.grpc.ManagedChannelBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import org.example.chat.controller.ChatController
 import org.example.grpc.gen.ChatGrpcKt
+import tornadofx.find
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 
-private class ChatClient(address: String) : Closeable {
+/**
+ * The main client model.
+ *
+ * Implements chat messaging with the server. Gets client's messages from
+ * {%link org.example.chat.controller.ChatController#sendChannel} and sends it to the server using gRPC
+ * in server-stub call.
+ *
+ * Receives the messages from the server in the concurrent coroutine and sends them back to client's view:
+ * {%link org.example.chat.controller.ChatController#receiveChannel}.
+ */
+class ChatClient(address: String) : Closeable {
     private val channel = ManagedChannelBuilder
         .forTarget(address)
         .usePlaintext()
@@ -18,27 +33,17 @@ private class ChatClient(address: String) : Closeable {
     private val stub = ChatGrpcKt.ChatCoroutineStub(channel)
 
     suspend fun start() {
-        val requests = readMessages().map {
-            ChatMessageFromClient {
-                name = ""
-                message = it
-            }
-        }
+        val clientController = find(ChatController::class)
+        val requests = clientController.sendChannel.receiveAsFlow()
         val responses = stub.chat(requests)
         GlobalScope.launch {
-            responses.collect { resp ->
-                println(resp.message)
+            responses.collect { response ->
+                clientController.receiveChannel.send(response)
             }
         }.join()
     }
 
     override fun close() {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS)
-    }
-}
-
-fun main() = runBlocking {
-    ChatClient("localhost:50051").use { client ->
-        client.start()
     }
 }
